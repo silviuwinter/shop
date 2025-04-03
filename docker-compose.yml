@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  backend:
+    image: node:22-alpine
+    container_name: shop_backend
+    working_dir: /usr/src/app
+    volumes:
+      - ./backend:/usr/src/app
+    depends_on:
+      - mariadb
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npx prisma generate && npm run start:dev"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=mysql://root:root_password@shop_mariadb:3306/shop_db
+
+  mariadb:
+    image: mariadb:11.4
+    container_name: shop_mariadb
+    ports:
+      - "3306:3306"
+
+    environment:
+      MYSQL_ROOT_PASSWORD: "root_password"
+      MYSQL_DATABASE: "shop_db"
+      MYSQL_USER: "shop_user"
+      MYSQL_PASSWORD: "shop_password"
+    volumes:
+      - ./db/mariadb_data:/var/lib/mysql
+      - ./db/sql:/docker-entrypoint-initdb.d
+    restart: always
+
+  frontend:
+    image: node:22-alpine
+    container_name: shop_frontend
+    working_dir: /usr/src/app
+    volumes:
+      - ./frontend:/usr/src/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install --legacy-peer-deps && npm run dev -- --host"
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+
+networks:
+  default:
+    driver: bridge
