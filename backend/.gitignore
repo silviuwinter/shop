@@ -1,5 +1,70 @@
-/backend/node_modules
-/backend/dist
+# PowerShell Setup Script
 
-/frontend/node_modules
-/frontend/dist
+# 1. Check if Chocolatey is installed
+if (!(Get-Command choco.exe -ErrorAction SilentlyContinue)) {
+    Write-Host "Chocolatey not found. Installing Chocolatey..."
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to install Chocolatey."
+        exit 1
+    }
+    Write-Host "Chocolatey installed successfully."
+} else {
+    Write-Host "Chocolatey is already installed."
+}
+
+# 2. Install Dev Tools
+Write-Host "Installing Visual Studio Code..."
+choco install vscode -y
+
+Write-Host "Installing Docker Desktop..."
+choco install docker-desktop -y
+
+Write-Host "Installing Docker Compose..."
+choco install docker-compose -y
+
+Write-Host "Installing Node.js..."
+choco install nodejs -y
+
+# 3. Clone the Repository
+$REPO_URL = "xxxx"
+Write-Host "Cloning repository from $REPO_URL..."
+git clone $REPO_URL repo
+if (!(Test-Path "./repo")) {
+    Write-Error "Failed to clone repository."
+    exit 1
+}
+Set-Location ./repo
+
+# 4. Open Project in VS Code
+Write-Host "Opening repository in Visual Studio Code..."
+code .
+
+# 5. Install Frontend Dependencies
+if (Test-Path "./frontend") {
+    Write-Host "Installing npm dependencies for frontend..."
+    Set-Location ./frontend
+    npm install
+    Set-Location ..
+} else {
+    Write-Warning "Frontend folder not found."
+}
+
+# 6. Install Backend Dependencies
+if (Test-Path "./backend") {
+    Write-Host "Installing npm dependencies for backend..."
+    Set-Location ./backend
+    npm install
+    Set-Location ..
+} else {
+    Write-Warning "Backend folder not found."
+}
+
+# 7. Install GitHub Copilot Extension
+Write-Host "Installing GitHub Copilot extension..."
+code --install-extension GitHub.copilot
+
+Write-Host "`n✅ Setup complete! Time to get to work 💪"
+Pause

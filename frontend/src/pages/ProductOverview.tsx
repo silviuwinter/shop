@@ -17,60 +17,62 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { ProductService } from '../services/products/products';
 import { ProductDto } from '../services/products/dto/product.dtos';
 import { FilesService } from '../services/files/files.service';
-import useCartStore from '../services/users/cart';
+import useCartStore from '../services/cart/cart';
 import { CartService } from '../services/cart/cart.service';
 import { CartItemDto } from '../services/cart/dto/cartItem.dtos';
+import { useUserStore } from '../../store/userStore';
 
 function ProductOverview() {
-  const { id } = useParams();
-  const [product, setProduct] = useState<ProductDto | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
-  const { addItem } = useCartStore(); // Zustand addItem function
+  const { id } = useParams(); // get product id from url
+  const [product, setProduct] = useState<ProductDto | null>(null); // store product details
+  const [loading, setLoading] = useState(true); // show loading spinner
+  const [error, setError] = useState<string | null>(null); // store error messages
+  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null); // for the dropdown menu
+  const { addItem } = useCartStore(); // zustand function to add items to cart
+  const isLoggedIn = useUserStore((state) => state.auth?.token); // check if user is logged in
 
-  const nav = useNavigate();
+  const nav = useNavigate(); // for navigation
 
   useEffect(() => {
-    let isMounted = true; 
+    let isMounted = true; // prevent state updates if component unmounts
 
     if (id) {
-      setLoading(true);
-      setError(null);
+      setLoading(true); // start loading
+      setError(null); // clear errors
 
-      ProductService.getProductById(id)
+      ProductService.getProductById(id) // fetch product details
         .then((data) => {
           if (isMounted) {
-            setProduct(data);
-            setLoading(false);
+            setProduct(data); // save product data
+            setLoading(false); // stop loading
           }
         })
         .catch((error) => {
-          console.error('Failed to fetch product:', error);
+          console.error('Failed to fetch product:', error); // log error
           if (isMounted) {
-            setError('Failed to load product.');
-            setLoading(false);
+            setError('Failed to load product.'); // show error message
+            setLoading(false); // stop loading
           }
         });
     }
 
     return () => {
-      isMounted = false;
+      isMounted = false; // cleanup when component unmounts
     };
-  }, [id]);
+  }, [id]); // runs when id changes
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMenuAnchor(event.currentTarget);
+    setMenuAnchor(event.currentTarget); // open dropdown menu
   };
 
   const handleMenuClose = () => {
-    setMenuAnchor(null);
+    setMenuAnchor(null); // close dropdown menu
   };
 
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
+        <CircularProgress /> {/* show spinner while loading */}
       </Box>
     );
   }
@@ -78,7 +80,7 @@ function ProductOverview() {
   if (error || !product) {
     return (
       <Container sx={{ textAlign: 'center', mt: 5 }}>
-        <Typography variant="h4" color="error">{error || 'Product not found'}</Typography>
+        <Typography variant="h4" color="error">{error || 'Product not found'}</Typography> {/* show error or not found */}
       </Container>
     );
   }
@@ -86,33 +88,39 @@ function ProductOverview() {
   async function handleDelete() {
     try {
       if (!product) {
-        return;
+        return; // no product, nothing to delete
       }
-      await ProductService.deleteProduct(product.id);
-      nav('/');
+      await ProductService.deleteProduct(product.id); // delete product
+      nav('/'); // go back to home
     } catch (error) {
-      console.error('Failed to delete product:', error);
-      setError('Failed to delete product. Please try again.');
+      console.error('Failed to delete product:', error); // log error
+      setError('Failed to delete product. Please try again.'); // show error message
     }
   }
 
   async function handleAddToCart() {
+    if (!isLoggedIn) {
+      alert('Please login to add items to cart'); // ask user to log in
+      nav('/login'); // redirect to login page
+      return;
+    }
+    
     try {
       if (!product) {
-        return;
+        return; // no product, nothing to add
       }
-      await CartService.addToCart(Number(id), 1); // Updated usage
+      await CartService.addToCart(Number(id), 1); // add product to cart
       const cartItem: CartItemDto = {
-        id: product.id, // Use product ID as cart item ID
+        id: product.id, // use product id for cart item
         productId: product.id,
-        quantity: 1,
-        product: product,
+        quantity: 1, // default quantity
+        product: product, // attach product details
       };
 
-      addItem(cartItem); // Update Zustand state
-      alert('Product added to cart!');
+      addItem(cartItem); // update cart state
+      alert('Product added to cart!'); // confirm to user
     } catch (error) {
-      console.error('Failed to add product to cart:', error);
+      console.error('Failed to add product to cart:', error); // log error
     }
   }
 
@@ -120,7 +128,7 @@ function ProductOverview() {
     <Container sx={{ textAlign: 'center', mt: 5 }}>
       <Card sx={{ maxWidth: 600, margin: 'auto', boxShadow: 6, borderRadius: 3, overflow: 'hidden', position: 'relative' }}>
         <IconButton
-          onClick={handleMenuOpen}
+          onClick={handleMenuOpen} // open menu
           sx={{
             position: 'absolute',
             top: 16,
@@ -132,53 +140,53 @@ function ProductOverview() {
             },
           }}
         >
-          <MoreVertIcon />
+          <MoreVertIcon /> {/* menu icon */}
         </IconButton>
         <Menu
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={handleMenuClose}
+          anchorEl={menuAnchor} // menu position
+          open={Boolean(menuAnchor)} // show menu if anchor exists
+          onClose={handleMenuClose} // close menu
         >
-          <MenuItem onClick={() => { handleMenuClose(); nav(`/products/edit/${product.id}`); }}>
+          <MenuItem onClick={() => { handleMenuClose(); nav(`/products/edit/${product.id}`); }}> {/* go to edit page */}
             Edit
           </MenuItem>
-          <MenuItem onClick={() => { handleMenuClose(); handleDelete(); }}>
+          <MenuItem onClick={() => { handleMenuClose(); handleDelete(); }}> {/* delete product */}
             Delete
           </MenuItem>
         </Menu>
         <CardMedia
           component="img"
           height="300"
-          image={FilesService.getFileUrl(product?.imageUrl) || '/images/image-standard.png'}
-          alt={product.name}
+          image={FilesService.getFileUrl(product?.imageUrl) || '/images/image-standard.png'} // show product image or default
+          alt={product.name} // image alt text
           sx={{ objectFit: 'cover' }}
         />
         <CardContent>
-          <Typography variant="h4" fontWeight="bold">{product.name}</Typography>
+          <Typography variant="h4" fontWeight="bold">{product.name}</Typography> {/* product name */}
           <Typography variant="body1" color="text.secondary" mt={2}>
-            <strong>Processor:</strong> {product.processor}
+            <strong>Processor:</strong> {product.processor} {/* product processor */}
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            <strong>RAM:</strong> {product.ram}GB
+            <strong>RAM:</strong> {product.ram}GB {/* product ram */}
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            <strong>Storage:</strong> {product.storage}GB
+            <strong>Storage:</strong> {product.storage}GB {/* product storage */}
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            <strong>Webcam:</strong> {product.webcam ? 'Yes' : 'No'}
+            <strong>Webcam:</strong> {product.webcam ? 'Yes' : 'No'} {/* webcam availability */}
           </Typography>
           <Typography variant="body1" color="text.secondary">
-             <strong>Microphone:</strong> {product.microphone ? 'Yes' : 'No'}
+             <strong>Microphone:</strong> {product.microphone ? 'Yes' : 'No'} {/* microphone availability */}
           </Typography>
           <Typography variant="h5" sx={{ mt: 3, fontWeight: 'bold', color: 'primary.main' }}>
-            ${product.price.toFixed(2)}
+            ${product.price.toFixed(2)} {/* product price */}
           </Typography>
 
           <Box display="flex" justifyContent="center" mt={3}>
             <Button 
               variant="contained" 
               sx={{ backgroundColor: 'green', '&:hover': { backgroundColor: 'darkgreen' } }} 
-              onClick={handleAddToCart}
+              onClick={handleAddToCart} // add to cart
             >
               Add to Cart
             </Button>

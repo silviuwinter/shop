@@ -6,17 +6,18 @@ import { AuthModule } from './auth/auth.module';
 import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
 
+// this is the main module of the app
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Makes the configuration available globally
+      isGlobal: true, // makes config available everywhere in the app
     }),
-    ProductsModule,
-    FilesModule,
-    AuthModule,
-    CartModule,
-    OrdersModule,
+    ProductsModule, // handles product-related features
+    FilesModule, // handles file uploads/downloads
+    AuthModule, // handles user authentication
+    CartModule, // handles shopping cart features
+    OrdersModule, // handles order processing
   ],
-  providers: [],
+  providers: [], // no global services here
 })
 export class AppModule {}

@@ -24,6 +24,7 @@ function CreateProduct() {
   const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
 
+  // updates the product state when the user types in the form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setProduct({
@@ -32,6 +33,7 @@ function CreateProduct() {
     });
   };
 
+  // handles image file selection and sets a preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -42,11 +44,13 @@ function CreateProduct() {
     }
   };
 
+  // sets a default image if no image is uploaded
   const useDefaultImage = () => {
     setImageFile(undefined);
     setPreviewUrl('/images/image-standard.png');
   };
 
+  // handles form submission to create a new product
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -66,17 +70,22 @@ function CreateProduct() {
 
   return (
     <Box sx={{ maxWidth: 500, margin: 'auto', mt: 5, p: 3, boxShadow: 3, borderRadius: 2, backgroundColor: 'white' }}>
+      {/* page title */}
       <Typography variant="h4" fontWeight="bold" gutterBottom>Create Product</Typography>
+      {/* error message */}
       {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
       <form onSubmit={handleSubmit}>
+        {/* create inputs for each product field */}
         {Object.entries(initialProduct).map(([key, value]) => (
           key === 'imageUrl' ? null : typeof value === 'boolean' ? (
+            // checkbox for boolean fields
             <FormControlLabel
               key={key}
-              control={<Checkbox name={key}  onChange={handleChange} />}
+              control={<Checkbox name={key} onChange={handleChange} />}
               label={<Typography sx={{ color: 'black' }}>{key.charAt(0).toUpperCase() + key.slice(1)}</Typography>}
             />
           ) : (
+            // text or number input for other fields
             <TextField
               key={key}
               label={key.charAt(0).toUpperCase() + key.slice(1)}
@@ -87,20 +96,24 @@ function CreateProduct() {
               value={product[key as keyof typeof product]}
               onChange={handleChange}
               sx={{ mb: 2 }}
-              inputProps={key === 'price' ? { step: '0.01' } : undefined} // Allow float input for price
+              inputProps={key === 'price' ? { step: '0.01' } : undefined}
             />
           )
         ))}
         <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography variant="subtitle1">Product Image</Typography>
           <Box sx={{ display: 'flex', gap: 2 }}>
+            {/* button default image */}
             <Button variant="outlined" color="secondary" onClick={useDefaultImage} disabled={isUploading}>Use Default Image</Button>
+            {/* button custom image */}
             <Button variant="outlined" color="secondary" component="label" disabled={isUploading}>
               Add Your Own Picture
               <input type="file" accept="image/*" hidden onChange={handleFileChange} />
             </Button>
           </Box>
+          {/* loading spinner */}
           {isUploading && <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>}
+          {/* image preview */}
           {previewUrl && !isUploading && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle2">Image Preview:</Typography>
@@ -108,6 +121,7 @@ function CreateProduct() {
             </Box>
           )}
         </Box>
+        {/* submit button */}
         <Button type="submit" variant="contained" color="primary" fullWidth>Create Product</Button>
       </form>
     </Box>

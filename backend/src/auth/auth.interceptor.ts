@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 import { UnauthorizedError } from './errors';
 import { AuthService } from './auth.service';
 
-@Injectable()
+@Injectable() // makes this class a service that can be injected into other parts of the app
 export class AuthInterceptor implements NestInterceptor {
   constructor(private authService: AuthService) {}
 
@@ -18,17 +18,17 @@ export class AuthInterceptor implements NestInterceptor {
     next: CallHandler,
   ): Promise<Observable<any>> {
     try {
-      const request = context.switchToHttp().getRequest();
-      const authString = request.headers['authorization'];
+      const request = context.switchToHttp().getRequest(); // get the incoming request
+      const authString = request.headers['authorization']; // grab the authorization header
       if (!authString) {
-        console.log('No auth string');
-        throw new UnauthorizedError();
+        console.log('No auth string'); // log missing auth header
+        throw new UnauthorizedError(); // throw error for missing auth
       }
-      request.user = await this.authService.checkAuthString(authString);
+      request.user = await this.authService.checkAuthString(authString); // validate token and attach user
     } catch (e) {
-      throw new UnauthorizedError();
+      throw new UnauthorizedError(); // throw error if auth fails
     }
 
-    return next.handle();
+    return next.handle(); // continue to the next handler
   }
 }

@@ -3,12 +3,13 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { JwtModule } from '../jwt/jwt.module';
 
+// this module bundles everything related to users (controller, service, etc.)
 @Module({
   imports: [
-    JwtModule,
+    JwtModule, // imports jwt module for authentication
   ],
-  controllers: [UsersController],
-  providers: [UsersService],
-  exports: [UsersService],
+  controllers: [UsersController], // connects the users controller
+  providers: [UsersService], // connects the users service
+  exports: [UsersService], // makes the service available to other modules
 })
 export class UsersModule {}

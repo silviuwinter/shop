@@ -9,7 +9,7 @@ import {
   Button,
   Box,
   Alert,
-  CircularProgress,
+  Avatar,
 } from '@mui/material';
 import PhoneInput from 'react-phone-input-2';
 import { updateUser, UpdateUserPayload } from '../services/users/users';
@@ -17,65 +17,52 @@ import { useUserStore } from '../../store/userStore';
 import { useNavigate } from 'react-router-dom';
 
 const UserEdit = () => {
-  const { auth, setUser } = useUserStore(); // Access user and setUser from Zustand store
-  const navigate = useNavigate(); // Hook for navigation
+  const { auth, setUser } = useUserStore(); // get user info and a function to update it
+  const navigate = useNavigate(); // for redirecting to another page
   const [formData, setFormData] = useState<UpdateUserPayload>({
     username: '',
     name: '',
     email: '',
     address: '',
     phone_number: '',
-  }); // Initialize formData with empty fields
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [profileImageFile, setProfileImageFile] = useState<File>();
-  const [profilePreviewUrl, setProfilePreviewUrl] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
+  }); // holds the form data
+  const [error, setError] = useState(''); // shows error messages
+  const [success, setSuccess] = useState(''); // shows success messages
 
   useEffect(() => {
     if (auth) {
-      const user  = auth.user || {};
-      setFormData(user);
+      const user = auth.user || {}; // get user info if logged in
+      setFormData(user); // pre-fill the form with user data
     }
   }, [auth]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value, // update form field when typing
     });
   };
 
   const handlePhoneChange = (value: string) => {
     setFormData({
       ...formData,
-      phone_number: value,
+      phone_number: value, // update phone number when typing
     });
   };
 
-  const handleProfileFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setProfileImageFile(file);
-      const reader = new FileReader();
-      reader.onload = () => setProfilePreviewUrl(reader.result?.toString() || '');
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
+    e.preventDefault(); // stop page reload
+    setError(''); // clear old errors
+    setSuccess(''); // clear old success messages
 
-    // Validate username
+    // check if username is valid (letters, numbers, underscores only)
     const usernameRegex = /^[a-zA-Z0-9_]+$/;
     if (!usernameRegex.test(formData.username)) {
       setError('Username can only contain letters, numbers, and underscores, and must not contain spaces.');
       return;
     }
 
-    // Validate email
+    // check if email is valid
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setError('Please enter a valid email address.');
@@ -83,13 +70,12 @@ const UserEdit = () => {
     }
 
     try {
-      const updatedUser = await updateUser(formData);
-      setSuccess('User updated successfully!');
-      setUser(updatedUser); // Update user in Zustand store
-      setTimeout(() => navigate('/user')); // Redirect to main page after 2 seconds
+      const updatedUser = await updateUser(formData); // send updated data to the server
+      setSuccess('User updated successfully!'); // show success message
+      setUser(updatedUser); // update user info in the app
+      setTimeout(() => navigate('/user')); // go back to user page after a bit
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred');
-      setIsUploading(false);
+      setError(err.response?.data?.message || 'An error occurred'); // show error if something goes wrong
     }
   };
 
@@ -109,6 +95,16 @@ const UserEdit = () => {
           <Typography variant="h4" fontWeight="bold" sx={{ mb: 3 }}>
             Edit Your Profile
           </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, mb: 3 }}>
+            <Avatar
+              alt="User Picture"
+              src={"/images/regular_guy.jpg"} // default profile pic
+              sx={{ width: 100, height: 100 }}
+            />
+            <Typography variant="h5" fontWeight="bold">
+              {formData.name || 'Your Name'}
+            </Typography>
+          </Box>
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
           <form onSubmit={handleSubmit}>
@@ -153,7 +149,7 @@ const UserEdit = () => {
               />
               <Box sx={{ bgcolor: '#D3D3D3', p: 1, borderRadius: 1 }}>
                 <PhoneInput
-                  country={'at'}
+                  country={'at'} // default country code
                   value={formData.phone_number}
                   onChange={handlePhoneChange}
                   inputProps={{
@@ -170,22 +166,9 @@ const UserEdit = () => {
                     backgroundColor: 'white',
                     color: 'black',
                   }}
-                  countryCodeEditable={false}
-                  enableAreaCodes={true}
+                  countryCodeEditable={false} // don't let user change country code
+                  enableAreaCodes={true} // allow area codes
                 />
-              </Box>
-              <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Button variant="outlined" color="secondary" component="label" disabled={isUploading}>
-                  Change your Profile Picture
-                  <input type="file" accept="image/*" hidden onChange={handleProfileFileChange} />
-                </Button>
-                {isUploading && <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>}
-                {profilePreviewUrl && !isUploading && (
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="subtitle2">Image Preview:</Typography>
-                    <img src={profilePreviewUrl} alt="Profile preview" style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain' }} />
-                  </Box>
-                )}
               </Box>
               <Button
                 type="submit"

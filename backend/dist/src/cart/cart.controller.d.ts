@@ -7,14 +7,14 @@ export declare class CartController {
         quantity: number;
     }): Promise<{
         id: number;
-        quantity: number;
         productId: number;
+        quantity: number;
         userId: number;
     }>;
     getCartItems(req: any): Promise<({
         product: {
-            id: number;
             name: string;
+            id: number;
             processor: string;
             ram: number;
             storage: number;
@@ -25,8 +25,8 @@ export declare class CartController {
         };
     } & {
         id: number;
-        quantity: number;
         productId: number;
+        quantity: number;
         userId: number;
     })[]>;
     updateCartItem(req: any, { cartItemId, quantity }: {
@@ -34,14 +34,14 @@ export declare class CartController {
         quantity: number;
     }): Promise<{
         id: number;
-        quantity: number;
         productId: number;
+        quantity: number;
         userId: number;
     }>;
     removeCartItem(req: any, cartItemId: number): Promise<{
         id: number;
-        quantity: number;
         productId: number;
+        quantity: number;
         userId: number;
     }>;
     clearCart(req: any): Promise<import(".prisma/client").Prisma.BatchPayload>;

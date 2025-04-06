@@ -24,55 +24,53 @@ const Register = () => {
     password: '',
     address: '',
     phone_number: '',
-  });
+  }); // stores all the form inputs
 
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const setAuth = useUserStore((state) => state.setAuth);
-  const navigate = useNavigate();
+  const [error, setError] = useState(''); // shows error messages
+  const [success, setSuccess] = useState(''); // shows success messages
+  const setAuth = useUserStore((state) => state.setAuth); // zustand store for auth data
+  const navigate = useNavigate(); // for redirecting to other pages
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value, // updates formData when user types
     });
   };
 
   const handlePhoneChange = (value: string) => {
     setFormData({
       ...formData,
-      phone_number: value,
+      phone_number: value, // updates phone number when user types
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // stops page reload on form submit
     setError('');
     setSuccess('');
 
-    // Validate username
-    const usernameRegex = /^[a-zA-Z0-9_]+$/; // Alphanumeric and underscores only
+    const usernameRegex = /^[a-zA-Z0-9_]+$/; // only letters, numbers, and underscores
     if (!usernameRegex.test(formData.username)) {
       setError('Username can only contain letters, numbers, and underscores, and must not contain spaces.');
-      return;
+      return; // stops if username is invalid
     }
 
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // basic email format check
     if (!emailRegex.test(formData.email)) {
       setError('Please enter a valid email address.');
-      return;
+      return; // stops if email is invalid
     }
 
     try {
-      const response = await AuthService.register(formData as RegisterRequest);
+      const response = await AuthService.register(formData as RegisterRequest); // sends data to backend
       console.log(response);
-      
-      setAuth(response); // Store auth data in zustand
-      setSuccess('Registration successful!');
-      navigate('/home'); // Redirect to home page after registration
+
+      setAuth(response); // saves user data in zustand
+      setSuccess('Registration successful!'); // shows success message
+      navigate('/'); // redirects to home page
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred');
+      setError(err.response?.data?.message || 'An error occurred'); // shows error from backend or generic error
     }
   };
 
@@ -100,7 +98,7 @@ const Register = () => {
                 label="Username"
                 name="username"
                 value={formData.username}
-                onChange={handleChange}
+                onChange={handleChange} // updates username
                 required
                 fullWidth
                 sx={{ backgroundColor: 'white' }}
@@ -109,7 +107,7 @@ const Register = () => {
                 label="Name"
                 name="name"
                 value={formData.name}
-                onChange={handleChange}
+                onChange={handleChange} // updates name
                 required
                 fullWidth
                 sx={{ backgroundColor: 'white' }}
@@ -119,7 +117,7 @@ const Register = () => {
                 name="email"
                 type="email"
                 value={formData.email}
-                onChange={handleChange}
+                onChange={handleChange} // updates email
                 required
                 fullWidth
                 sx={{ backgroundColor: 'white' }}
@@ -129,7 +127,7 @@ const Register = () => {
                 name="password"
                 type="password"
                 value={formData.password}
-                onChange={handleChange}
+                onChange={handleChange} // updates password
                 required
                 fullWidth
                 sx={{ backgroundColor: 'white' }}
@@ -138,7 +136,7 @@ const Register = () => {
                 label="Address"
                 name="address"
                 value={formData.address}
-                onChange={handleChange}
+                onChange={handleChange} // updates address
                 required
                 fullWidth
                 placeholder="e.g., Streetname nr. 1, Cityname PLZ"
@@ -148,7 +146,7 @@ const Register = () => {
                 <PhoneInput
                   country={'at'}
                   value={formData.phone_number}
-                  onChange={handlePhoneChange}
+                  onChange={handlePhoneChange} // updates phone number
                   inputProps={{
                     name: 'phone_number',
                     id: 'phone_number',
@@ -163,8 +161,8 @@ const Register = () => {
                     backgroundColor: 'white',
                     color: 'black',
                   }}
-                  countryCodeEditable={false}
-                  enableAreaCodes={true}
+                  countryCodeEditable={false} // locks country code
+                  enableAreaCodes={true} // allows area codes
                 />
               </Box>
               <Button

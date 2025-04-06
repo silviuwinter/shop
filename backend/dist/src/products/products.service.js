@@ -31,24 +31,24 @@ let ProductsService = class ProductsService {
     async getById(id) {
         return db_1.prisma.product.findUnique({
             where: {
-                id
+                id,
             }
         });
     }
     async update(id, updateProductDto) {
         return db_1.prisma.product.update({
             where: {
-                id
+                id,
             },
             data: {
-                ...updateProductDto
+                ...updateProductDto,
             }
         });
     }
     async delete(id) {
         return db_1.prisma.product.delete({
             where: {
-                id
+                id,
             }
         });
     }

@@ -1,0 +1,72 @@
+Wenn man started, und keine node__modules gibt separat in front und backend-> npm install --force
+
+
+
+
+To update a pirisma db -> npx prisma db push & npx prisma generate
+	if there are still errors, like types not found -> delete node_modules folder & npm install & npx prisma generate
+
+docker compose up
+
+
+
+
+
+git add .   
+
+git commit -m “comment”
+
+git push
+
+
+
+For https://dbdiagram.io
+
+Table Product {
+  id          Int [pk, increment]
+  name        String
+  processor   String
+  ram         Int
+  storage     Int
+  webcam      Boolean
+  microphone  Boolean
+  price       Float
+  imageUrl    String [null]
+}
+
+Table User {
+  id           Int [pk, increment]
+  email        String [unique]
+  password     String
+  name         String
+  username     String
+  address      String
+  phone_number String [null]
+}
+
+Table CartItem {
+  id        Int [pk, increment]
+  quantity  Int
+  productId Int
+  userId    Int
+}
+
+Table OrderItem {
+  id        Int [pk, increment]
+  quantity  Int
+  productId Int
+  orderId   Int
+}
+
+Table Order {
+  id         Int [pk, increment]
+  createdAt  DateTime
+  userId     Int
+  totalPrice Float
+}
+
+Ref: CartItem.productId > Product.id
+Ref: CartItem.userId > User.id
+Ref: OrderItem.productId > Product.id
+Ref: OrderItem.orderId > Order.id
+Ref: Order.userId > User.id

@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import {
     Container,
     Typography,
@@ -14,22 +14,24 @@ import { useUserStore } from '../../store/userStore';
 import { UserDto } from '../../interfaces/userInterfaces';
 
 const Payment = () => {
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [paymentSuccess, setPaymentSuccess] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('');
-    const customerDetails: UserDto = useUserStore((state) => state.auth?.user)!; // Fetch user from Zustand store
+    const [isProcessing, setIsProcessing] = useState(false); // tracks if payment is being processed
+    const [paymentSuccess, setPaymentSuccess] = useState(false); // tracks if payment was successful
+    const [paymentMethod, setPaymentMethod] = useState(''); // stores selected payment method
+
+    const customerDetails: UserDto = useUserStore((state) => state.auth?.user)!; // gets user info from store
+
     const handleBuyNow = () => {
-        if (!paymentMethod) {
-            alert('Please select a payment method.');
+        if (!paymentMethod) { // checks if payment method is selected
+            alert('Please select a payment method.'); // show alert if no method is selected
             return;
         }
 
-        OrdersService.createOrder()
-        setIsProcessing(true);
-        setTimeout(() => {
-            setIsProcessing(false);
-            setPaymentSuccess(true);
-        }, 2000); // Simulate a 2-second payment process
+        OrdersService.createOrder(); // pretend to create an order (not implemented here)
+        setIsProcessing(true); // show "processing" state
+        setTimeout(() => { // fake a delay for payment processing
+            setIsProcessing(false); // stop "processing" state
+            setPaymentSuccess(true); // mark payment as successful
+        }, 2000); // 2-second delay
     };
 
     return (
@@ -48,29 +50,58 @@ const Payment = () => {
                     <Typography variant="h4" fontWeight="bold" sx={{ mb: 3 }}>
                         Pay Now
                     </Typography>
-                    {!paymentSuccess ? (
+                    {!paymentSuccess ? ( // if payment not done, show form
                         <>
-                            <Box sx={{ textAlign: 'left', mb: 3, display: 'flex', alignItems: 'center' }}>
+                            <Box
+                                sx={{
+                                    textAlign: 'left',
+                                    mb: 3,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 2,
+                                    p: 2,
+                                    borderRadius: 2,
+                                    bgcolor: '#f9f9f9',
+                                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                }}
+                            >
                                 <Box sx={{ flexGrow: 1 }}>
-                                    <Typography variant="h6">User Information:</Typography>
-                                    <Typography>Name: {customerDetails.name}</Typography>
-                                    <Typography>Address: {customerDetails.address}</Typography>
-                                    <Typography>Email: {customerDetails.email}</Typography>
+                                    <Typography variant="h6" sx={{ mb: 1, color: '#555' }}>
+                                        User Information:
+                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            display: 'grid',
+                                            gridTemplateColumns: '100px auto',
+                                            rowGap: 0.5,
+                                            columnGap: 1,
+                                        }}
+                                    >
+                                        <Typography sx={{ color: '#666', fontWeight: 'bold' }}>Name:</Typography>
+                                        <Typography sx={{ color: '#666' }}>{customerDetails.name}</Typography> {/* user's name */}
+                                        <Typography sx={{ color: '#666', fontWeight: 'bold' }}>Address:</Typography>
+                                        <Typography sx={{ color: '#666' }}>{customerDetails.address}</Typography> {/* user's address */}
+                                        <Typography sx={{ color: '#666', fontWeight: 'bold' }}>Email:</Typography>
+                                        <Typography sx={{ color: '#666' }}>{customerDetails.email}</Typography> {/* user's email */}
+                                    </Box>
                                 </Box>
-                                <Box sx={{ ml: 2, display: 'flex', justifyContent: 'center' }}>
-                                    <Avatar
-                                        src={"/images/regular_guy.jpg"}
-                                        alt="Profile"
-                                        sx={{ width: 100, height: 100 }}
-                                    />
-                                </Box>
+                                <Avatar
+                                    src={"/images/regular_guy.jpg"} // profile pic placeholder
+                                    alt="Profile"
+                                    sx={{
+                                        width: 120,
+                                        height: 120,
+                                        border: '2px solid #ccc',
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                    }}
+                                />
                             </Box>
                             <Box sx={{ mb: 3 }}>
                                 <Typography>Select Payment Method</Typography>
                                 <select
-                                    value={paymentMethod}
-                                    onChange={(e) => setPaymentMethod(e.target.value)}
-                                    disabled={isProcessing}
+                                    value={paymentMethod} // current selected method
+                                    onChange={(e) => setPaymentMethod(e.target.value)} // update method on change
+                                    disabled={isProcessing} // disable dropdown if processing
                                     style={{
                                         width: '100%',
                                         height: '40px',
@@ -86,18 +117,18 @@ const Payment = () => {
                                 </select>
                             </Box>
                             <Button
-                                onClick={handleBuyNow}
+                                onClick={handleBuyNow} // triggers payment process
                                 variant="contained"
                                 color="primary"
-                                disabled={isProcessing}
+                                disabled={isProcessing} // disable button if processing
                                 fullWidth
                             >
-                                {isProcessing ? 'Processing...' : 'Buy Now'}
+                                {isProcessing ? 'Processing...' : 'Buy Now'} {/* show "processing" or "buy now" */}
                             </Button>
                         </>
                     ) : (
                         <Alert severity="success" sx={{ mt: 3 }}>
-                            Payment Successful! Thank you for your purchase.
+                            Payment Successful! Thank you for your purchase. {/* success message */}
                         </Alert>
                     )}
                 </CardContent>

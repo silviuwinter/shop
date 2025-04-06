@@ -1,33 +1,35 @@
 import { useState } from 'react';
 import { AppBar, Toolbar, Typography, IconButton, Box, Drawer, List, ListItem, ListItemText } from '@mui/material';
 import { Menu as MenuIcon, Person as PersonIcon } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom'; // Ensure react-router-dom is used for navigation
+import { Link, useNavigate } from 'react-router-dom'; // navigation between pages
 import { ShoppingCart as ShoppingCartIcon } from '@mui/icons-material';
 import { useUserStore } from '../../store/userStore';
 
 function Navbar() {
-  const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
-  const isLoggedIn = useUserStore((state) => state.auth?.token);
+  const [open, setOpen] = useState(false); // keeps track if the drawer is open or closed
+  const navigate = useNavigate(); // helps to navigate between pages
+  const isLoggedIn = useUserStore((state) => state.auth?.token); // checks if the user is logged in
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    // opens or closes the drawer
     if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
-      return;
+      return; // ignore tab/shift key presses
     }
-    setOpen(open);
+    setOpen(open); // set drawer state
   };
 
   const DrawerList = (
     <Box sx={{ width: 250, pt: 8 }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+      {/* admin tools menu */}
       <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>
         Admin Tools
       </Typography>
       <List>
         <ListItem component={Link} to="/products/create" sx={{ color: 'black' }}>
-          <ListItemText primary="Create Product" sx={{ color: 'black' }} />
+          <ListItemText primary="Create Product" sx={{ color: 'black' }} /> {/* link to create product */}
         </ListItem>
         <ListItem component={Link} to="/statistics" sx={{ color: 'black' }}>
-          <ListItemText primary="Statistics" sx={{ color: 'black' }} />
+          <ListItemText primary="Statistics" sx={{ color: 'black' }} /> {/* link to view stats */}
         </ListItem>
       </List>
     </Box>
@@ -37,7 +39,7 @@ function Navbar() {
     <>
       <AppBar position="fixed" sx={{ bgcolor: '#D3D3D3', top: 0, zIndex: 1201 }}>
         <Toolbar>
-          {/* Logo */}
+          {/* app logo */}
           <Typography
             variant="h6"
             sx={{
@@ -48,16 +50,16 @@ function Navbar() {
               textDecoration: 'none',
             }}
             component={Link}
-            to="/home"
+            to="/"
           >
             iStore
           </Typography>
 
-          {/* User Info or Login/Register Buttons */}
+          {/* user actions */}
           <Box sx={{ display: 'flex', gap: 2 }}>
             {isLoggedIn ? (
               <button
-                onClick={() => navigate('/user')}
+                onClick={() => navigate('/user')} // go to user profile
                 style={{
                   background: 'none',
                   border: 'none',
@@ -65,12 +67,12 @@ function Navbar() {
                   color: 'black',
                 }}
               >
-                <PersonIcon />
+                <PersonIcon /> {/* user icon */}
               </button>
             ) : (
               <>
                 <button
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate('/login')} // go to login page
                   style={{
                     background: 'none',
                     border: '1px solid black',
@@ -83,7 +85,7 @@ function Navbar() {
                   Login
                 </button>
                 <button
-                  onClick={() => navigate('/register')}
+                  onClick={() => navigate('/register')} // go to register page
                   style={{
                     background: 'none',
                     border: '1px solid black',
@@ -97,9 +99,9 @@ function Navbar() {
                 </button>
               </>
             )}
-            {/* Cart Button */}
+            {/* cart button */}
             <button
-              onClick={() => navigate('/cart')}
+              onClick={() => navigate('/cart')} // go to cart page
               style={{
                 background: 'none',
                 border: 'none',
@@ -107,28 +109,28 @@ function Navbar() {
                 color: 'black',
               }}
             >
-              <ShoppingCartIcon />
+              <ShoppingCartIcon /> {/* cart icon */}
             </button>
           </Box>
 
-          {/* Open Drawer */}
+          {/* menu drawer button */}
           <IconButton
             edge="end"
             color="inherit"
             sx={{ ml: 2, color: 'black' }}
-            onClick={toggleDrawer(true)}
+            onClick={toggleDrawer(true)} // open drawer
             className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
           >
-            <MenuIcon />
+            <MenuIcon /> {/* menu icon */}
           </IconButton>
           <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
-            {DrawerList}
+            {DrawerList} {/* admin tools drawer */}
           </Drawer>
         </Toolbar>
       </AppBar>
-      {/* Add margin to the main content */}
+      {/* margin to avoid overlapping with navbar */}
       <Box sx={{ mt: 12 }}>
-        {/* Main content goes here */}
+        {/* main content goes here */}
       </Box>
     </>
   );
