@@ -11,6 +11,11 @@ REM Install Git
 echo Installing Git...
 winget install --id Git.Git -e --source winget
 
+REM Refresh system PATH to recognize Git
+echo Refreshing system PATH...
+setx PATH "%PATH%;C:\Program Files\Git\cmd"
+set PATH=%PATH%;C:\Program Files\Git\cmd
+
 REM Pull open source repository from URL
 git clone https://github.com/silviuwinter/shop.git project
 cd project
@@ -30,6 +35,10 @@ REM Docker Compose is included with Docker Desktop, no separate installation nee
 REM Install Node.js
 echo Installing Node.js...
 winget install --id OpenJS.NodeJS.LTS -e --source winget
+
+REM Install Visual Studio Code
+echo Installing Visual Studio Code...
+winget install --id Microsoft.VisualStudioCode -e --source winget
 
 echo Setup complete.
 pause
