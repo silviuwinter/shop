@@ -47,7 +47,3 @@ echo Opening project in Visual Studio Code...
 code .
 
 pause
-
-REM Restart the PC
-echo The system will now restart to apply changes.
-shutdown /r /t 10
