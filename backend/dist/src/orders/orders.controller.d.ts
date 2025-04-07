@@ -4,8 +4,8 @@ export declare class OrdersController {
     constructor(ordersService: OrdersService);
     createOrder(req: any): Promise<{
         id: number;
-        createdAt: Date;
         userId: number;
+        createdAt: Date;
         totalPrice: number;
     }>;
     getStats(): Promise<any>;

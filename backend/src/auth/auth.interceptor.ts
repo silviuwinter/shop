@@ -5,7 +5,6 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 
-import { Observable } from 'rxjs';
 import { UnauthorizedError } from './errors';
 import { AuthService } from './auth.service';
 
@@ -16,7 +15,7 @@ export class AuthInterceptor implements NestInterceptor {
   async intercept(
     context: ExecutionContext,
     next: CallHandler,
-  ): Promise<Observable<any>> {
+  ): Promise<any> {
     try {
       const request = context.switchToHttp().getRequest(); // get the incoming request
       const authString = request.headers['authorization']; // grab the authorization header
