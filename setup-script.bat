@@ -41,4 +41,7 @@ echo Installing Visual Studio Code...
 winget install --id Microsoft.VisualStudioCode -e --source winget
 
 echo Setup complete.
+echo Opening project in Visual Studio Code...
+code .
+
 pause
