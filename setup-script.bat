@@ -22,13 +22,9 @@ cd %USERPROFILE%\Desktop
 git clone https://github.com/silviuwinter/shop.git project
 cd project
 
-REM Install Docker for Windows
-echo Installing Docker for Windows...
-winget install --id Docker.DockerDesktop -e --source winget
-
-REM Wait for Docker installation to complete
-echo Please complete the Docker installation and press any key to continue...
-pause
+REM Set Execution Policy to RemoteSigned
+echo Setting Execution Policy to RemoteSigned...
+powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
 
 REM Install Docker Compose
 echo Installing Docker Compose...
