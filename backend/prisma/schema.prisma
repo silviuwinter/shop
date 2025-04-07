@@ -17,6 +17,7 @@ model Product {
   microphone Boolean
   price      Float
   imageUrl  String?
+  test  String?
   cartItem   CartItem[]
   orderItems OrderItem[] @relation("ProductOrderItems")
 }
