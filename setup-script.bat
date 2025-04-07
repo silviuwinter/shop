@@ -17,6 +17,8 @@ setx PATH "%PATH%;C:\Program Files\Git\cmd"
 set PATH=%PATH%;C:\Program Files\Git\cmd
 
 REM Pull open source repository from URL
+echo Cloning the project to the Desktop...
+cd %USERPROFILE%\Desktop
 git clone https://github.com/silviuwinter/shop.git project
 cd project
 
@@ -43,5 +45,9 @@ winget install --id Microsoft.VisualStudioCode -e --source winget
 echo Setup complete.
 echo Opening project in Visual Studio Code...
 code .
+
+REM Run the project with Docker Compose
+echo Starting the project with Docker Compose...
+docker-compose up
 
 pause
