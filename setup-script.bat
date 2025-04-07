@@ -1,15 +1,27 @@
 @echo off
 
-REM Install Chocolatey
-echo Checking for Chocolatey installation...
-choco --version >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-    echo Chocolatey is not installed. Installing...
-    powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-    echo Chocolatey installed successfully.
-) else (
-    echo Chocolatey is already installed.
-)
+echo This will first install chocolatey, then other tools
+echo .
+echo Browse https://chocolatey.org/packages for packages
+echo .
+echo Ensure that your cmd.exe runs as Administrator
+echo .
+echo If at university, disable any proxy in the Internet Explorer Network settings.
+echo .
+pause
+echo .
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
+choco feature enable -n=allowGlobalConfirmation
+pause
+
+echo Now chocolatey should be ready and we can go ahead
+echo .
+pause
+
+rem enable clicking on choco:// links in the browser
+rem https://community.chocolatey.org/packages/choco-protocol-support
+rem choco install choco-protocol-support
 
 REM Install Git
 echo Installing Git...
